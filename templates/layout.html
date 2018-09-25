@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Application</title>
+    <link
+        href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css"
+        rel="stylesheet"  type='text/css'>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+
+        {% load static %}
+        <link type="text/css" rel="stylesheet" href="{% static 'css/bootstrap-social.less' %}">
+</head>
+<body>
+    <header class="container">
+
+
+
+    {% load socialaccount %}
+
+    </header>
+    <div align="center">
+        {% if user.is_authenticated %}
+        <h3>Welcome {{ user.first_name }}!</h3>
+        <p><img width="155" height="155" src="{{ user.socialaccount_set.all.0.get_avatar_url }}"/></p>
+        <a class="btn btn-social btn-vk" href="../accounts/logout">
+            <span class="fa fa-vk"></span>Logout from VK
+        </a>
+
+        <div>
+            <h3>Your list of friends:</h3>
+                {% for n in Items.response.items %}
+            <h2>{{ n.first_name }} </h2>
+            <p></p>
+            <img src="{{n.photo_100}}" border="1">
+                {% endfor %}
+
+        </div>
+            {% else %}
+        <h2>VK login</h2>
+        <a class="btn btn-social btn-vk" href="{% provider_login_url 'vk' method='oauth2' %}">
+            <span class="fa fa-vk"></span> Login with VK
+        {% endif %}
+
+        </a>
+    </div>
+</body>
+</html>
