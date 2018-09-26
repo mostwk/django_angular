@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_project.authentication',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -90,6 +91,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': env.DB_NAME(),
+        #'NAME': 'djangodb',
         'USER': env.DB_USER(),
         'PASSWORD': env.DB_PASS(),
         'HOST': 'localhost',
@@ -136,6 +138,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-
+AUTH_USER_MODEL = 'authentication.Account'
 STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/'
