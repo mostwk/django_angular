@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '+pp1^tsewrq2rmnug*(its!g4_r@$qau@#18)mna%un@d8^7qz'
+SECRET_KEY = env.SECRET_KEY()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -66,8 +67,8 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'processors.st',
-                'processors.friends',
+                'django_project.processors.st',
+                'django_project.processors.friends',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -88,9 +89,9 @@ WSGI_APPLICATION = 'django_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'djangodb',
-        'USER': 'mostwk',
-        'PASSWORD': 'andrey1995',
+        'NAME': env.DB_NAME(),
+        'USER': env.DB_USER(),
+        'PASSWORD': env.DB_PASS(),
         'HOST': 'localhost',
         'PORT': '',
     }
