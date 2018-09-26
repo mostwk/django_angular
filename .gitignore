@@ -2,3 +2,4 @@ env.py
 __init__.py
 /venv
 /django_project/migrations
+/.idea
