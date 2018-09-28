@@ -4,12 +4,15 @@ from .serializers import AccountSerializer
 from .permissions import IsAccountOwner
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
 
 
 class AccountViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:

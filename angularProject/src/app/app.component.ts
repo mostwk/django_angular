@@ -9,13 +9,13 @@ import {UserService} from "./user.service";
   providers: [UserService]
 })
 export class AppComponent implements OnInit {
-  register;
+  input;
 
   constructor(private userService: UserService) {
 
   }
   ngOnInit() {
-    this.register = {
+    this.input = {
       username: "",
       password: "",
       confirmed_password: "",
@@ -23,11 +23,25 @@ export class AppComponent implements OnInit {
     };
   }
   registerUser() {
-  this.userService.registerNewUser(this.register).subscribe(
+  this.userService.registerNewUser(this.input).subscribe(
     response => {
-      alert("User" + this.register.username + "has been created")
+      alert("User" + this.input.username + "has been created")
     },
-    error => console.log("error", error)
+    error => {
+      console.log("error", error);
+    }
   );
+  }
+
+  loginUser() {
+    this.userService.loginUser(this.input).subscribe(
+      response => {
+        console.log(response);
+        alert("User " + this.input.username + " logged in" + response.token)
+      },
+      error => {
+        console.log("error", error);
+      }
+    );
   }
 }
