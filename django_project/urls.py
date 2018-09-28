@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', views.Home.as_view(), name='layout'),
+    path(r'api/', include('django_project.authentication.urls'))
 ]

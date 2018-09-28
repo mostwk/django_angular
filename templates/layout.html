@@ -11,7 +11,6 @@
         crossorigin="anonymous">
 
         {% load static %}
-        <link type="text/css" rel="stylesheet" href="{% static 'css/bootstrap-social.less' %}">
 </head>
 <body>
     <header class="container">
@@ -22,7 +21,7 @@
 
     </header>
     <div align="center">
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated and not user.is_superuser %}
         <h3>Welcome {{ user.first_name }}!</h3>
         <p><img width="155" height="155" src="{{ user.socialaccount_set.all.0.get_avatar_url }}"/></p>
         <a class="btn btn-social btn-vk" href="../accounts/logout">
