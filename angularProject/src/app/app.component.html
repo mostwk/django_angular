@@ -1,18 +1,33 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <div style="text-align:center">
-  <h1>
-    Welcome to My project!
-  </h1>
-  <input [(ngModel)]="input.username" placeholder="username" required="required">
-  <br>
-  <input [(ngModel)]="input.password" placeholder="password" type="password">
-  <br>
-  <input [(ngModel)]="input.confirmed_password" placeholder="confirm password" type="password">
-  <br>
-  <input [(ngModel)]="input.email" placeholder="email"><br>
-  <button (click)="registerUser()" >Register</button>
-  <button (click)="loginUser()" >Login</button>
-
+  <h2>Log In or register</h2>
+<div class="row" *ngIf="!token">
+  <div class="col-sm-4">
+    <label>Username:</label><br />
+    <input [(ngModel)]="input.username" required="required">
+  </div>
+  <div class="col-sm-4">
+    <label>Password:</label><br />
+    <input [(ngModel)]="input.password" type="password">
+  </div>
+    <div class="col-sm-4">
+    <label>Confirmed Password:</label><br />
+    <input [(ngModel)]="input.confirmed_password" type="password">
+  </div>
+  <div class="col-sm-4">
+    <label>Email:</label><br />
+    <input [(ngModel)]="input.email" type="text">
+  </div>
+  <div class="col-sm-4">
+    <button (click)="loginUser()" class="btn btn-primary">Log In</button>&nbsp;
+    <button (click)="registerUser()" class="btn btn-primary">Register</button>&nbsp;
+  </div>
+</div>
+<div class="row" *ngIf="token">
+  <div class="col-sm-12">You are logged in as {{ user.username }}.<br />
+    <button (click)="logoutUser()" class="btn btn-primary">Log Out</button>&nbsp;
+  </div>
+</div>
 </div>
 
 

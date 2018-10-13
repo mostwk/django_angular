@@ -36,8 +36,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     first_name = models.CharField(max_length=40, blank=True)
     last_name = models.CharField(max_length=40, blank=True)
-    tagline = models.CharField(max_length=40, blank=True)
-
     is_staff = models.BooleanField('staff status', default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
