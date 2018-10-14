@@ -5,6 +5,9 @@ from .permissions import IsAccountOwner
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.views import ObtainAuthToken
+from django.contrib.auth.models import update_last_login
+from rest_framework.authtoken.models import Token
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -28,7 +31,6 @@ class AccountViewSet(viewsets.ModelViewSet):
 
         if serializer.is_valid():
             Account.objects.create_user(**serializer.validated_data)
-
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({
@@ -37,4 +39,10 @@ class AccountViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
+class NewAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        result = super().post(request, *args, **kwargs)
+        token = Token.objects.get(key=result.data['token'])
+        update_last_login(None, token.user)
+        return result
 

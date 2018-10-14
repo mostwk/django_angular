@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django_project.authentication',
     'allauth',
+    'django_project.blog',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.vk',
