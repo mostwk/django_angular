@@ -25,7 +25,7 @@ SECRET_KEY = env.SECRET_KEY()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['52.59.104.97', 'localhost']
+ALLOWED_HOSTS = ['52.59.104.97', '127.0.0.1']
 
 
 # Application definition
