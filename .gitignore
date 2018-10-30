@@ -6,3 +6,8 @@ __init__.py
 django_project/authentication/__pycache__/
 /__pycache__
 *.pyc
+/static/rest_framework/
+/static/admin/
+*.save
+*.swp
+*.swo
