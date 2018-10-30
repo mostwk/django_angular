@@ -25,15 +25,13 @@ SECRET_KEY = env.SECRET_KEY()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['52.59.104.97', 'localhost']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django_project.authentication',
     'allauth',
-    'django_project.blog',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.vk',
@@ -47,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django_project.authentication',
+    'django_project.blog',
 ]
 
 SITE_ID = 3
@@ -146,4 +146,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 AUTH_USER_MODEL = 'authentication.Account'
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 LOGIN_REDIRECT_URL = '/'
