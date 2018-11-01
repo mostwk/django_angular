@@ -5,12 +5,6 @@ from django.contrib.auth.models import BaseUserManager
 
 class AccountManager(BaseUserManager):
     def create_user(self, email, password=None, **kwargs):
-        if not email:
-            raise ValueError('Users must have a valid email address')
-
-        if not kwargs.get('username'):
-            raise ValueError('Users must have a valid username')
-
         account = self.model(
             email=self.normalize_email(email),
             username=kwargs.get('username')
@@ -18,15 +12,12 @@ class AccountManager(BaseUserManager):
         account.is_stuff = False
         account.set_password(password)
         account.save()
-
         return account
 
     def create_superuser(self, email, password, **kwargs):
         account = self.create_user(email, password, **kwargs)
-
         account.is_stuff = True
         account.save()
-
         return account
 
 
@@ -46,8 +37,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 
-    def __unicode__(self):
-        return self.email
+    def __str__(self):
+        return self.username
 
     def get_full_name(self):
         return '{} {}'.format(self.first_name, self.last_name)
