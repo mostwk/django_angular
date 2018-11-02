@@ -23,9 +23,12 @@ class AccountViewSet(viewsets.ModelViewSet):
         if self.request.method == 'POST':
             return permissions.AllowAny(),
 
-        return permissions.IsAuthenticated(), IsAccountOwner,
+        if self.request.method == 'DELETE':
+            return IsAccountOwner(), permissions.IsAdminUser(),
 
-    def create(self, request):
+        return permissions.IsAuthenticated(), IsAccountOwner(),
+
+    def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
@@ -41,6 +44,11 @@ class AccountViewSet(viewsets.ModelViewSet):
             'status': 'Bad request',
             'message': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class NewAuthToken(ObtainAuthToken):

@@ -1,13 +1,18 @@
 from django.contrib.auth import update_session_auth_hash
-
 from rest_framework import serializers
-
 from .models import Account
 
 
 class AccountSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
     confirmed_password = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = Account
+        fields = ('id', 'email', 'username', 'created_at', 'updated_at',
+                  'first_name', 'last_name', 'password',
+                  'confirmed_password',)
+        read_only_fields = ('created_at', 'updated_at',)
 
     def validate(self, data):
         if len(data['username']) < 5:
@@ -38,10 +43,3 @@ class AccountSerializer(serializers.ModelSerializer):
         update_session_auth_hash(self.context.get('request'), instance)
 
         return instance
-
-    class Meta:
-        model = Account
-        fields = ('id', 'email', 'username', 'created_at', 'updated_at',
-                  'first_name', 'last_name', 'password',
-                  'confirmed_password',)
-        read_only_fields = ('created_at', 'updated_at',)
