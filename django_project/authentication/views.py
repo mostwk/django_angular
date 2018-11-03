@@ -24,7 +24,7 @@ class AccountViewSet(viewsets.ModelViewSet):
             return permissions.AllowAny(),
 
         if self.request.method == 'DELETE':
-            return IsAccountOwner(), permissions.IsAdminUser(),
+            return IsAccountOwner(),
 
         return permissions.IsAuthenticated(), IsAccountOwner(),
 
