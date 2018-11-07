@@ -52,9 +52,21 @@ class AccountViewSet(viewsets.ModelViewSet):
 
 
 class NewAuthToken(ObtainAuthToken):
-    def post(self, request, *args, **kwargs):
-        result = super().post(request, *args, **kwargs)
-        token = Token.objects.get(key=result.data['token'])
-        update_last_login(None, token.user)
-        return result
 
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)
+            update_last_login(None, token.user)
+            return Response({
+                'status': 'Success',
+                'token': token.key,
+                'user': token.user.username
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            "status": 'Error',
+            'message': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
