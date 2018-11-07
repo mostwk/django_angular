@@ -8,6 +8,8 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth.models import update_last_login
 from rest_framework.authtoken.models import Token
+from rest_framework.renderers import JSONRenderer
+import json
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -40,6 +42,7 @@ class AccountViewSet(viewsets.ModelViewSet):
                 'message': 'Hello',
                 'user': serializer.validated_data
             }, status=status.HTTP_201_CREATED)
+
         removed_duplicates = [key + ': ' + value[0] for key, value in
                               serializer.errors.items() if 'blank' in value[0]]
         error_list = [value[0] for key, value in
@@ -68,7 +71,12 @@ class NewAuthToken(ObtainAuthToken):
             return Response({
                 'status': 'Success',
                 'token': token.key,
-                'user': token.user.username
+                'user': {
+                    'email': token.user.email,
+                    'username': token.user.username,
+                    'first_name': token.user.first_name,
+                    'last_name': token.user.last_name
+                }
             }, status=status.HTTP_200_OK)
 
         return Response({
