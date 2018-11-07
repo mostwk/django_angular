@@ -1,5 +1,6 @@
 from django.contrib.auth import update_session_auth_hash
 from rest_framework import serializers
+from django.utils.translation import ugettext_lazy as _
 from .models import Account
 
 
@@ -17,17 +18,15 @@ class AccountSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if len(data['username']) < 5:
             raise serializers.ValidationError(
-                'Username should be at least 5 characters'
+                _('Username should be at least 5 characters')
             )
-
         if data['confirmed_password'] != data['password']:
             raise serializers.ValidationError(
-                'Passwords are not identical'
+                _('Passwords are not identical')
             )
-
         if len(data['password']) < 6:
             raise serializers.ValidationError(
-                'Password must be at least 6 characters'
+                _('Password must be at least 6 characters')
             )
         return data
 

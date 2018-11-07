@@ -40,9 +40,14 @@ class AccountViewSet(viewsets.ModelViewSet):
                 'message': 'Hello',
                 'user': serializer.validated_data
             }, status=status.HTTP_201_CREATED)
+        removed_duplicates = [key + ': ' + value[0] for key, value in
+                              serializer.errors.items() if 'blank' in value[0]]
+        error_list = [value[0] for key, value in
+                      serializer.errors.items() if 'blank' not in value[0]]
+        error_list.extend(removed_duplicates)
         return Response({
             'status': 'Bad request',
-            'message': serializer.errors
+            'errors': error_list
         }, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
@@ -67,6 +72,6 @@ class NewAuthToken(ObtainAuthToken):
             }, status=status.HTTP_200_OK)
 
         return Response({
-            "status": 'Error',
-            'message': serializer.errors
+            "status": 'Bad request',
+            'error': "Could not log in with provided credentials"
         }, status=status.HTTP_400_BAD_REQUEST)
