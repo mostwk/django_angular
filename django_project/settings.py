@@ -25,7 +25,7 @@ SECRET_KEY = env.SECRET_KEY()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['52.59.104.97', '127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'mostwk.site', 'www.mostwk.site']
 
 
 # Application definition
@@ -139,7 +139,7 @@ REST_FRAMEWORK = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 

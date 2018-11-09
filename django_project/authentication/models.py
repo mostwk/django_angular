@@ -7,7 +7,9 @@ class AccountManager(BaseUserManager):
     def create_user(self, email, password=None, **kwargs):
         account = self.model(
             email=self.normalize_email(email),
-            username=kwargs.get('username')
+            username=kwargs.get('username'),
+            first_name=kwargs.get('first_name', ''),
+            last_name=kwargs.get('last_name', '')
         )
         account.is_stuff = False
         account.set_password(password)

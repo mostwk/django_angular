@@ -8,15 +8,35 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth.models import update_last_login
 from rest_framework.authtoken.models import Token
-from rest_framework.renderers import JSONRenderer
-import json
+from django.utils.translation import ugettext_lazy as _
+from rest_framework import exceptions
+
+
+class MyTokenAuthentication(TokenAuthentication):
+    def authenticate_credentials(self, key):
+        model = self.get_model()
+        try:
+            token = model.objects.select_related('user').get(key=key)
+        except model.DoesNotExist:
+            raise exceptions.AuthenticationFailed({
+                'status': "Bad request",
+                'error': _('Invalid token.')
+            })
+
+        if not token.user.is_active:
+            raise exceptions.AuthenticationFailed({
+                'status': 'Bad request',
+                'error': _('User inactive or deleted.')
+            })
+
+        return token.user, token
 
 
 class AccountViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
-    authentication_classes = (TokenAuthentication, )
+    authentication_classes = (MyTokenAuthentication, )
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -29,6 +49,20 @@ class AccountViewSet(viewsets.ModelViewSet):
             return IsAccountOwner(),
 
         return permissions.IsAuthenticated(), IsAccountOwner(),
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            'status': 'Success',
+            'users': serializer.data
+        })
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -72,8 +106,8 @@ class NewAuthToken(ObtainAuthToken):
                 'status': 'Success',
                 'token': token.key,
                 'user': {
-                    'email': token.user.email,
                     'username': token.user.username,
+                    'email': token.user.email,
                     'first_name': token.user.first_name,
                     'last_name': token.user.last_name
                 }
