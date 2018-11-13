@@ -9,10 +9,55 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth.models import update_last_login
 from rest_framework.authtoken.models import Token
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import exceptions
+from rest_framework import exceptions, HTTP_HEADER_ENCODING
+from django.utils.six import text_type
+
+
+def get_authorization_header(request):
+    """
+    Return request's 'Authorization:' header, as a bytestring.
+    Hide some test client ickyness where the header can be unicode.
+    """
+    auth = request.META.get('HTTP_AUTHORIZATION', b'')
+    if isinstance(auth, text_type):
+        # Work around django test client oddness
+        auth = auth.encode(HTTP_HEADER_ENCODING)
+    return auth
 
 
 class MyTokenAuthentication(TokenAuthentication):
+
+    def authenticate(self, request):
+        auth = get_authorization_header(request).split()
+
+        if not auth or auth[0].lower() != self.keyword.lower().encode():
+            msg = ({
+                'status': 'Bad request',
+                'error': _('Authentication credentials were not provided')
+            })
+            raise exceptions.AuthenticationFailed(msg)
+
+        if len(auth) == 1:
+            msg = ({
+                'status': 'Bad request',
+                'error': _('Invalid token header. No credentials provided.')
+            })
+            raise exceptions.AuthenticationFailed(msg)
+        elif len(auth) > 2:
+            msg = ({
+                'status': 'Bad request',
+                'error': _('Invalid token header. Token string should not contain spaces.')
+            })
+            raise exceptions.AuthenticationFailed(msg)
+
+        try:
+            token = auth[1].decode()
+        except UnicodeError:
+            msg = _('Invalid token header. Token string should not contain invalid characters.')
+            raise exceptions.AuthenticationFailed(msg)
+
+        return self.authenticate_credentials(token)
+
     def authenticate_credentials(self, key):
         model = self.get_model()
         try:
@@ -21,6 +66,12 @@ class MyTokenAuthentication(TokenAuthentication):
             raise exceptions.AuthenticationFailed({
                 'status': "Bad request",
                 'error': _('Invalid token.')
+            })
+
+        if not key:
+            raise exceptions.AuthenticationFailed({
+                'status': 'Bad request',
+                'error': _('Authentication credentials are not provided.')
             })
 
         if not token.user.is_active:
