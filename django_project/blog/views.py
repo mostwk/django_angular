@@ -8,7 +8,7 @@ from rest_framework import status
 
 
 class BlogPostViewSet(viewsets.ModelViewSet):
-    queryset = BlogPost.objects.all()
+    queryset = BlogPost.objects.all().order_by('date')
     serializer_class = BlogPostSerializer
     authentication_classes = (MyTokenAuthentication, )
 

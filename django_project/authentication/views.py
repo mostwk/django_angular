@@ -34,7 +34,7 @@ class MyTokenAuthentication(TokenAuthentication):
 
 class AccountViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
-    queryset = Account.objects.all()
+    queryset = Account.objects.all().order_by('id')
     serializer_class = AccountSerializer
     authentication_classes = (MyTokenAuthentication, )
 
@@ -77,11 +77,7 @@ class AccountViewSet(viewsets.ModelViewSet):
                 'user': serializer.validated_data
             }, status=status.HTTP_201_CREATED)
 
-        removed_duplicates = [key + ': ' + value[0] for key, value in
-                              serializer.errors.items() if 'blank' in value[0]]
-        error_list = [value[0] for key, value in
-                      serializer.errors.items() if 'blank' not in value[0]]
-        error_list.extend(removed_duplicates)
+        error_list = [key + ': ' + value[0] for key, value in serializer.errors.items()]
         return Response({
             'status': 'Bad request',
             'errors': error_list

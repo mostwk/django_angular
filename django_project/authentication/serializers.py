@@ -17,17 +17,17 @@ class AccountSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if len(data['username']) < 5:
-            raise serializers.ValidationError(
-                _('Username should be at least 5 characters')
-            )
+            raise serializers.ValidationError({
+                'username': _('Username should be at least 5 characters')
+            })
         if data['confirmed_password'] != data['password']:
-            raise serializers.ValidationError(
-                _('Passwords are not identical')
-            )
+            raise serializers.ValidationError({
+                'password': _('Passwords are not identical')
+            })
         if len(data['password']) < 6:
-            raise serializers.ValidationError(
-                _('Password must be at least 6 characters')
-            )
+            raise serializers.ValidationError({
+                'password': _('Password must be at least 6 characters')
+            })
         return data
 
     def create(self, validated_data):
