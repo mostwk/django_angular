@@ -16,10 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title='SN API')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.Home.as_view(), name='index'),
     path(r'api/', include('django_project.authentication.urls')),
-    path(r'api/', include('django_project.blog.urls'))
+    path(r'api/', include('django_project.blog.urls')),
+    path(r'docs/', schema_view)
 ]

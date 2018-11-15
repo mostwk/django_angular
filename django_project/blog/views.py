@@ -8,9 +8,10 @@ from rest_framework import status
 
 
 class BlogPostViewSet(viewsets.ModelViewSet):
-    queryset = BlogPost.objects.all().order_by('date')
+    queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
     authentication_classes = (MyTokenAuthentication, )
+    filter_fields = ('name', )
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -25,6 +26,9 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         return permissions.IsAuthenticated(), IsPostAuthor(),
 
     def list(self, request, *args, **kwargs):
+        """
+        Requesting list of all posts.
+        """
         queryset = self.filter_queryset(self.get_queryset())
 
         page = self.paginate_queryset(queryset)
@@ -39,6 +43,9 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         })
 
     def create(self, request, *args, **kwargs):
+        """
+        Creating new post if token is provided.
+        """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
@@ -56,6 +63,9 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Deleting post if corresponding token is provided.
+        """
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
