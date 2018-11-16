@@ -4,9 +4,9 @@ from django_project.blog import views
 
 
 router = routers.DefaultRouter()
-router.register(r'', views.BlogPostViewSet)
-
+router.register(r'posts', views.BlogPostViewSet)
+router.register(r'posts/(?P<post_id>.+?)/comments', views.PostCommentViewSet, basename='postcomment')
 
 urlpatterns = [
-    url(r'posts/?', include(router.urls)),
+    url(r'^', include(router.urls)),
 ]
