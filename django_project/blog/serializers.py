@@ -7,7 +7,14 @@ class BlogPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlogPost
-        fields = ('id', 'date', 'author', 'name', 'body', 'comments')
+        fields = ('id', 'create_date', 'update_date', 'author', 'name', 'body', 'comments')
+
+    def update(self, instance, validated_data):
+        instance.body = validated_data.get('body', instance.body)
+        instance.name = validated_data.get('name', instance.name)
+        instance.save()
+
+        return instance
 
 
 class PostCommentSerializer(serializers.ModelSerializer):
@@ -15,4 +22,10 @@ class PostCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostComment
-        fields = ('id', 'author', 'text', 'date', 'post_id')
+        fields = ('id', 'author', 'text', 'create_date', 'update_date', 'post_id')
+
+    def update(self, instance, validated_data):
+        instance.text = validated_data.get('text', instance.text)
+        instance.save()
+
+        return instance

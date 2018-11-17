@@ -5,10 +5,10 @@ from .views import NewAuthToken
 
 
 router = routers.DefaultRouter()
-router.register(r'', views.AccountViewSet)
+router.register(r'users', views.AccountViewSet)
 
 
 urlpatterns = [
-    url(r'users/?', include(router.urls)),
+    url(r'', include(router.urls)),
     url(r'auth/?$', NewAuthToken.as_view())
 ]
