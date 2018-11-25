@@ -1,15 +1,14 @@
-from rest_framework import viewsets, permissions
-from .models import Account
-from .serializers import AccountSerializer
-from .permissions import IsAccountOwner
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth.models import update_last_login
-from rest_framework.authtoken.models import Token
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import exceptions
+from rest_framework import exceptions, permissions, status, viewsets
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.response import Response
+
+from .models import Account
+from .permissions import IsAccountOwner
+from .serializers import AccountSerializer
 
 
 class MyTokenAuthentication(TokenAuthentication):

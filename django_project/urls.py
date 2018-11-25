@@ -14,9 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from . import views
+from django.urls import include, path
 from rest_framework_swagger.views import get_swagger_view
+
+from . import views
 
 schema_view = get_swagger_view(title='SN API')
 

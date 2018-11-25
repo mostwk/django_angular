@@ -1,6 +1,7 @@
-from django.db import models
-from django_project.authentication.models import Account
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models
+
+from django_project.authentication.models import Account
 from django_project.likes.models import Like
 
 
@@ -41,4 +42,3 @@ class PostComment(models.Model):
     @property
     def total_likes(self):
         return self.likes.count()
-

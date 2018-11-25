@@ -1,5 +1,6 @@
-from django.test import TestCase, Client
 import json
+
+from django.test import Client, TestCase
 
 
 class UsersTestCase(TestCase):

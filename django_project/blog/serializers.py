@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from .models import BlogPost, PostComment
+
 from django_project.likes import services as likes_services
+
+from .models import BlogPost, PostComment
 
 
 class BlogPostSerializer(serializers.ModelSerializer):

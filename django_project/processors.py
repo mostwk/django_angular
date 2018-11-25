@@ -1,5 +1,6 @@
-from allauth.socialaccount.models import SocialToken
 import requests
+
+from allauth.socialaccount.models import SocialToken
 
 
 def st(request):

@@ -1,4 +1,5 @@
-from django.test import TestCase, Client
+from django.test import Client, TestCase
+
 # Create your tests here.
 
 
@@ -147,4 +148,3 @@ class UsersTestCase(TestCase):
         }
         response = c.get('api/users/testuser1/', data=data)
         self.assertEqual(response.status_code, 404)
-
