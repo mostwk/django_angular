@@ -6,13 +6,14 @@ from django_project.authentication.views import MyTokenAuthentication
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Count
+from django_project.likes.mixin import LikedMixin
 
 
-class BlogPostViewSet(viewsets.ModelViewSet):
+class BlogPostViewSet(LikedMixin, viewsets.ModelViewSet):
     queryset = BlogPost.objects.all()
-
     serializer_class = BlogPostSerializer
     authentication_classes = (MyTokenAuthentication, )
+
     filter_fields = ('name', )
 
     def get_permissions(self):
@@ -47,6 +48,9 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         })
 
     def retrieve(self, request, *args, **kwargs):
+        """
+        Requesting a  specific post.
+        """
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         pk = self.kwargs['pk']
@@ -88,7 +92,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class PostCommentViewSet(viewsets.ModelViewSet):
+class PostCommentViewSet(LikedMixin, viewsets.ModelViewSet):
     queryset = PostComment.objects.all()
     serializer_class = PostCommentSerializer
     authentication_classes = (MyTokenAuthentication, )

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django_project.authentication',
     'django_project.blog',
+    'django_project.likes',
 ]
 
 SITE_ID = 3

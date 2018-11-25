@@ -1,13 +1,32 @@
 from django.test import TestCase, Client
-import json
 # Create your tests here.
 
 
 class UsersTestCase(TestCase):
 
+    def test_authenticate_user(self):
+        c = Client()
+        data = {
+            'username': 'testuser1',
+            'email': 'testuser1@gmail.com',
+            'password': 'testuser1',
+            'confirmed_password': 'testuser1'
+        }
+        response = c.post('/api/users/', data=data, content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
+        data = {
+            'username': 'testuser1',
+            'password': 'testuser1',
+        }
+        response = c.post('/api/auth/', data=data, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        return response.json()
+
     def test_get_all_users(self):
         c = Client()
         response = c.get('/api/users/')
+        # print(response.json())
         self.assertEqual(response.status_code, 200)
 
     def test_post_user_normal(self):
@@ -118,3 +137,14 @@ class UsersTestCase(TestCase):
         }
         response = c.post('/api/auth/', data=data, content_type='application/json')
         self.assertEqual(response.status_code, 400)
+
+    def test_put_user(self):
+        c = Client()
+        jsn = self.test_authenticate_user()
+        data = {
+            'username': 'testuser1',
+            'email': 'testuser2@gmail.com'
+        }
+        response = c.get('api/users/testuser1/', data=data)
+        self.assertEqual(response.status_code, 404)
+
