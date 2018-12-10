@@ -6,6 +6,7 @@ __init__.py
 .idea/workplace.xml
 django_project/authentication/__pycache__/
 /__pycache__
+django_project/blog/migrations/
 *.pyc
 /static/rest_framework/
 /static/admin/

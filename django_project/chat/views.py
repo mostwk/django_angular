@@ -1,7 +1,10 @@
 from django.contrib.auth import get_user_model
+from notifications.signals import notify
 from rest_framework import permissions
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 
 from .models import (ChatSession, ChatSessionMember, ChatSessionMessage,
                      deserialize_user)
@@ -11,14 +14,18 @@ class ChatSessionView(APIView):
     permission_classes = (permissions.IsAuthenticated, )
 
     def post(self, request, *args, **kwargs):
+        """
+        Create new chat session
+        """
         user = request.user
-
-        chat_session = ChatSession.objects.create(owner=user)
-
+        name = request.data['name']
+        chat_session = ChatSession.objects.create(owner=user, name=name)
+        create_date = chat_session.create_date
         return Response({
             'status': 'Success',
             'uri': chat_session.uri,
-            'message': 'New chat session created'
+            'create_date': create_date,
+            'message': f'{name} session created'
         })
 
     def patch(self, request, *args, **kwargs):
@@ -26,7 +33,6 @@ class ChatSessionView(APIView):
         Add user to a chat session
         """
         User = get_user_model()
-
         uri = kwargs['uri']
         username = request.data['username']
         user = User.objects.get(username=username)
@@ -41,16 +47,30 @@ class ChatSessionView(APIView):
 
         owner = deserialize_user(owner)
         members = [
-            deserialize_user(chat_session.user)
-            for chat_session in chat_session.member.all()
+            chat_session.user.username
+            for chat_session in chat_session.members.all()
         ]
-        members.insert(0, owner)
+        members.insert(0, owner['username'])
 
         return Response({
             'status': 'Success',
             'members': members,
             'message': f'{user.username} joined the chat',
             'user': deserialize_user(user)
+        })
+
+    @action(methods=['GET'], detail=True)
+    def members(self, request, *args, **kwargs):
+        uri = kwargs['uri']
+        chat_session = ChatSession.objects.get(uri=uri)
+        members = [
+            chat_session.user.username
+            for chat_session in chat_session.members.all()
+        ]
+        return Response({
+            'status': 'Success',
+            'count': len(members),
+            'members': members
         })
 
 
@@ -72,26 +92,40 @@ class ChatSessionMessageView(APIView):
 
         return Response({
             'uri': chat_session.uri,
+            'name': chat_session.name,
             'messages': messages
         })
 
     def post(self, request, *args, **kwargs):
         """
-        Create a new message in a chat session
+        create a new message in a chat session.
         """
         uri = kwargs['uri']
-        message = request.date['message']
+        message = request.data['message']
 
         user = request.user
         chat_session = ChatSession.objects.get(uri=uri)
 
-        ChatSessionMessage.objects.create(
+        chat_session_message = ChatSessionMessage.objects.create(
             user=user, chat_session=chat_session, message=message
         )
 
+        notif_args = {
+            'source': user,
+            'source_display_name': user.get_full_name(),
+            'category': 'chat', 'action': 'Sent',
+            'obj': chat_session_message.id,
+            'short_description': 'You a new message', 'silent': True,
+            'extra_data': {'uri': chat_session.uri, 'message': {
+                'user': deserialize_user(user),
+                'message': message
+            }}
+        }
+        notify.send(
+            sender=self.__class__, **notif_args, channels=['websocket']
+        )
+
         return Response({
-            'status': 'Success',
-            'uri': chat_session.uri,
-            'message': message,
+            'status': 'SUCCESS', 'uri': chat_session.uri, 'message': message,
             'user': deserialize_user(user)
         })

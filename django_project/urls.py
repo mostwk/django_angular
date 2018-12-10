@@ -26,5 +26,6 @@ urlpatterns = [
     path('', views.Home.as_view(), name='index'),
     path(r'api/', include('django_project.authentication.urls')),
     path(r'api/', include('django_project.blog.urls')),
+    path(r'api/', include('django_project.chat.urls')),
     path(r'docs/', schema_view)
 ]

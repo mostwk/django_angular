@@ -27,7 +27,7 @@ SECRET_KEY = env.SECRET_KEY()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'mostwk.site', 'www.mostwk.site']
+ALLOWED_HOSTS = ['127.0.0.1', 'mostwk.site', 'www.mostwk.site', 'localhost']
 
 
 # Application definition
@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'rest_framework_swagger',
+    # 'django_filters',
+    'notifications',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -129,9 +131,15 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
-   # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-   # 'PAGE_SIZE': 5
+    # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend', ),
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'PAGE_SIZE': 5
+}
+
+CELERY_TASK_ALWAYS_EAGER = False
+
+NOTIFICATIONS_CHANNELS = {
+   'websocket': 'django_project.chat.channels.BroadCastWebSocketChannel'
 }
 
 # Internationalization

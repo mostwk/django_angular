@@ -26,7 +26,11 @@ def generate_unique_uri():
 
 class ChatSession(TrackableDateModel):
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
+    name = models.TextField(max_length=40, default='Chat Session')
     uri = models.URLField(default=generate_unique_uri)
+
+    def __str__(self):
+        return self.name, self.uri
 
 
 class ChatSessionMessage(TrackableDateModel):
@@ -38,13 +42,20 @@ class ChatSessionMessage(TrackableDateModel):
 
     def to_json(self):
         return {
-            'user': deserialize_user(self.user),
+            'author': self.user.username,
+            'create_date': self.create_date,
             'message': self.message
         }
+
+    def __str__(self):
+        return f"{self.chat_session.name}, {self.user} - {self.message}"
 
 
 class ChatSessionMember(TrackableDateModel):
     chat_session = models.ForeignKey(
-        ChatSession, related_name='member', on_delete=models.PROTECT
+        ChatSession, related_name='members', on_delete=models.PROTECT
     )
     user = models.ForeignKey(User, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.user.username
