@@ -84,7 +84,9 @@ class AccountViewSet(viewsets.ModelViewSet):
                 'user': serializer.validated_data
             }, status=status.HTTP_201_CREATED)
 
-        error_list = [key + ': ' + value[0] for key, value in serializer.errors.items()]
+        error_list = [key + ': ' + value[0]
+                      for key, value in serializer.errors.items()
+                      ]
         return Response({
             'status': 'Bad request',
             'errors': error_list

@@ -1,19 +1,17 @@
 from django.contrib.auth import get_user_model
 from notifications.signals import notify
-from rest_framework import permissions
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
 
-from .models import (ChatSession, ChatSessionMember, ChatSessionMessage,
-                     deserialize_user)
+from .models import ChatSession, ChatSessionMessage, deserialize_user
+from .permissions import IsChatMember
 
 
-class ChatSessionView(APIView):
+class ChatSessionView(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated, )
 
-    def post(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         """
         Create new chat session
         """
@@ -28,12 +26,12 @@ class ChatSessionView(APIView):
             'message': f'{name} session created'
         })
 
-    def patch(self, request, *args, **kwargs):
+    def partial_update(self, request, *args, **kwargs):
         """
         Add user to a chat session
         """
         User = get_user_model()
-        uri = kwargs['uri']
+        uri = kwargs['pk']
         username = request.data['username']
         user = User.objects.get(username=username)
 
@@ -61,7 +59,7 @@ class ChatSessionView(APIView):
 
     @action(methods=['GET'], detail=True)
     def members(self, request, *args, **kwargs):
-        uri = kwargs['uri']
+        uri = kwargs['pk']
         chat_session = ChatSession.objects.get(uri=uri)
         members = [
             chat_session.user.username
@@ -69,16 +67,19 @@ class ChatSessionView(APIView):
         ]
         return Response({
             'status': 'Success',
+            'uri': chat_session.uri,
+            'name': chat_session.name,
+            'owner': chat_session.owner.username,
             'count': len(members),
             'members': members
         })
 
 
-class ChatSessionMessageView(APIView):
+class ChatSessionMessageView(viewsets.ModelViewSet):
 
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (IsChatMember, )
 
-    def get(self, request, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
         """
         Return all messages from a chat session
         """
@@ -91,12 +92,14 @@ class ChatSessionMessageView(APIView):
         ]
 
         return Response({
+            'status': 'Success',
             'uri': chat_session.uri,
             'name': chat_session.name,
+            'owner': chat_session.owner.username,
             'messages': messages
         })
 
-    def post(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         """
         create a new message in a chat session.
         """
@@ -116,9 +119,12 @@ class ChatSessionMessageView(APIView):
             'category': 'chat', 'action': 'Sent',
             'obj': chat_session_message.id,
             'short_description': 'You a new message', 'silent': True,
-            'extra_data': {'uri': chat_session.uri, 'message': {
-                'user': deserialize_user(user),
-                'message': message
+            'extra_data': {
+                'uri': chat_session.uri,
+                'message': {
+                    'date_created': chat_session_message.create_date,
+                    'user': deserialize_user(user),
+                    'message': message
             }}
         }
         notify.send(
@@ -126,6 +132,8 @@ class ChatSessionMessageView(APIView):
         )
 
         return Response({
-            'status': 'SUCCESS', 'uri': chat_session.uri, 'message': message,
+            'status': 'Success',
+            'uri': chat_session.uri,
+            'message': message,
             'user': deserialize_user(user)
         })
